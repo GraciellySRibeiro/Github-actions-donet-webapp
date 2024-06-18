@@ -1,37 +1,24 @@
-name: Exemplo de Workflow
+name: github-actions .NET
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   schedule:
-    - cron: '0 * * * *'  # Executa a cada hora
+    - cron: '0 0 * * 1'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: Verificar código
-        uses: actions/checkout@v2
-        
-      - name: Instalar dependências
-        run: |
-          npm install
-          
-      - name: Executar teste
-        run: |
-          npm test
-          
-      - name: Ação pré-existente do GitHub
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          
-      - name: Meu script personalizado
-        run: |
-          echo "Executando meu script..."
-          # Adicione comandos personalizados aqui
 
-      - name: Comando final
-        run: echo "Este é o último comando a ser executado"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore **/*.csproj
+      - name: Build
+        run: dotnet build **/*.csproj --no-restore
